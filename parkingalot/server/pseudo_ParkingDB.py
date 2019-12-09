@@ -5,24 +5,20 @@ class Db:
 
     def __init__(self):
         #Dicionario com as informações de cada parque
+        pass
 
-        h = Parque("Hospital", "Seg-Sex 09:00-17:00", 200, 200, 5, 5, 0, 190, 10)
-
-    def insertParkInfo(self, park_list):
-        f = open("Parks.txt", "ab+")
-        for p in park_list:
-            pickle.dump(p, f)
+    def insertParkInfo(self, park_dic):
+        f = open("Parks.txt", "wb")
+        pickle.dump(park_dic,f)
         f.close()
 
-    def getParkInfo(self, nome_parque):
+    def getParkInfo(self, coords):
         f = open("Parks.txt", "rb")
         try:
-            while True:
-                p = pickle.load(f)
-                print(p.name)
-                if nome_parque == p.name:
-                    f.close()
-                    return p
+            p=pickle.load(f)
+            f.close()
+            print(p)
+            return p[coords]
         except:
             f.close()
             return None
@@ -36,13 +32,14 @@ class Db:
 class Parque:
 
     #hardcode para usarmos sempre o mesmos campos
-    def __init__(self, name, horario, l_max, l_l, l_def, l_elec, l_gpl, l_geral, preco_hora):
+    def __init__(self, name, location, l_max, l_l, lugares_info, tabela_preco, owner):
         self.name = name
-        self.horario = horario
+        self.location = location
         self.lugares_max = l_max
         self.lugares_livres = l_l
-        self.lugares_info = {"def": l_def, "elec": l_elec, "gpl": l_gpl, "geral": l_geral}
-        self.preco_hora = preco_hora #centimos
+        self.lugares_info = lugares_info
+        self.tabela_preco = tabela_preco
+        self.owner = owner
 
 
 
