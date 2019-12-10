@@ -24,14 +24,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(FontAwesomeIcons.arrowLeft),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Soon()),
-              );
-            }),
+        leading: new Container(),
         title: Text("ParkingALot"),
         actions: <Widget>[
           IconButton(
