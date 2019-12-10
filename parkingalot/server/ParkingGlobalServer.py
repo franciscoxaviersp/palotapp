@@ -1,5 +1,5 @@
 from flask import Flask, escape, request, Response
-from pseudo_ParkingDB import Db, Parque
+from pseudo_ParkingDB import Db, Parque, User
 import json
 
 #FLASK_APP=ParkingGlobalServer.py flask run --host=0.0.0.0
@@ -28,16 +28,19 @@ def info():
 @app.route("/login")
 def login():
     user = request.args.get("user", None)
-    print(user)
-    if(user != "batatinhas"):
-        return Response(json.dumps({}), mimetype="application/json")
-    return Response(json.dumps({"batatinnhas": "batatinhas"}), mimetype="application/json")
+    db = Db()
+    password = db.getUserPassword(user)
+    if password == "":
+        return Response(json.dumps({"exist_error": "true", "password" : ""}), mimetype="application/json")
+    return Response(json.dumps({"exist_error": "false", "password" : password}), mimetype="application/json")
 
-    #if(user == None or password == None):
-    #    return "F"
 
-    #db = Db()
-    #return db.userValid(user, password)
+@app.route("/createUser", methods=["POST"])
+def create():
+    data = request.json
+    db = Db()
+    error = db.insertUsers([User(data["user"], data["password"])])
+    return Response(json.dumps({"exist_error": error}), mimetype="application/json")
 
 
 

@@ -12,6 +12,31 @@ class Db:
         pickle.dump(park_dic,f)
         f.close()
 
+    def insertUsers(self, user_list):
+        if(self.testUserValid(user_list)):
+            f = open("Users.txt", "rb")
+            du = pickle.load(f)
+            f.close()
+            for u in user_list:
+                du[u.name] = u.password
+            f = open("Users.txt", "wb")
+            pickle.dump(du, f)
+            f.close()
+            return "true"
+        return "false"            
+          
+    def testUserValid(self, user_list):
+        f = open("Users.txt", "rb")
+        du = pickle.load(f)
+        f.close()
+        keys = set(du.keys())
+        return not any([True for u in user_list if (u.name in keys)])
+
+
+
+
+
+
     def getParkInfo(self, coords):
         f = open("Parks.txt", "rb")
         try:
@@ -22,6 +47,16 @@ class Db:
         except:
             f.close()
             return None
+
+    def getUserPassword(self, name):
+        f = open("Users.txt", "rb")
+        du = pickle.load(f)
+        f.close()
+        if (name in set(du.keys())):
+            return du[name]
+        return ""
+        
+
 
     def userValid(self, name, password):
         if (name == "batatinhas" and password == "batatinhas"):
@@ -41,6 +76,11 @@ class Parque:
         self.tabela_preco = tabela_preco
         self.owner = owner
 
+class User:
+
+    def __init__(self, name, password):
+        self.name = name
+        self.password = password
 
 
 
