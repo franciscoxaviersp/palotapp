@@ -2,18 +2,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'utils.dart';
 import 'soon.dart';
 import 'parqueUA.dart';
 import 'parqueHospital.dart';
 import 'parqueMusica.dart';
 
 class HomePage extends StatefulWidget {
+  final User user;
+
+  HomePage(this.user): super();
+
   @override
-  HomePageState createState() => HomePageState();
+  HomePageState createState() => HomePageState(user);
 }
 
 class HomePageState extends State<HomePage> {
   Completer<GoogleMapController> _controller = Completer();
+  User user;
+
+  HomePageState(this.user): super();
 
   @override
   void initState() {
