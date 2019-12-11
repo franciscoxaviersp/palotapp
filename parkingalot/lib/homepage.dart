@@ -6,7 +6,10 @@ import 'soon.dart';
 import 'parqueUA.dart';
 import 'parqueHospital.dart';
 import 'parqueMusica.dart';
+import 'package:location/location.dart';
 
+var currentLat;
+var currentLong;
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
@@ -165,17 +168,35 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGoogleMap(BuildContext context) {
+  _getUserLocation() async{
+    var currentLocation;
+    var location = new Location();
 
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      currentLocation = await location.getLocation();
+    } on Exception catch (e) {
+      currentLocation = null;
+    }
+    currentLat=currentLocation.latitude;
+    currentLong=currentLocation.longitude;
+    var tuple = [currentLocation.latitude,currentLocation.longitude];
+    return tuple;
+  }
+  Widget _buildGoogleMap(BuildContext context) {
+    _getUserLocation();
+    //print(location);
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GoogleMap(
         mapType: MapType.normal,
-        initialCameraPosition:  CameraPosition(target: LatLng(40.633788, -8.655800), zoom: 15),
+        initialCameraPosition:  CameraPosition(target: LatLng(40.634248, -8.656225), zoom: 15),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
+        myLocationButtonEnabled: true,
+        myLocationEnabled: true,
         markers: {
           hospitalMarker,uaMarker,musicaMarker
         },
