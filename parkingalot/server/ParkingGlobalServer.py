@@ -6,11 +6,11 @@ import json
 
 app = Flask(__name__)
 
-@app.route('/info')
-def info():
+@app.route('/parkInfo')
+def parkInfo():
     db = Db()
-    p = db.getParkInfo("40°38'N 8°39'W")
-    print(p)
+    coordenadas = request.args.get("park", None)
+    p = db.getParkInfo(coordenadas)
     if p == None:
         return json.dumps({})
     dic={
@@ -23,6 +23,28 @@ def info():
         "owner":p.owner
     }
     return Response(json.dumps(dic), mimetype="application/json")
+
+@app.route("/userInfo")
+def userInfo():
+    db = Db()
+    name = request.args.get("name", None)
+    u = db.getUser(name)
+    print(u.reserva)
+    dic = {
+        "name": u.name,
+        "password": u.password,
+        "email": u.email,
+        "telemovel": u.telemovel,
+        "favoritos": u.favoritos,
+        "reserva": {"coordenadas" : u.reserva.coordenadas,
+                    "inicio" : {"data" : u.reserva.dataInicial, "hora" : u.reserva.horaInicial},
+                    "fim" : {"data": u.reserva.dataFinal, "hora": u.reserva.horaFinal}
+                    },
+        "proprietario": u.proprietario
+    }
+    return Response(json.dumps(dic), mimetype="application/json")
+
+
 
 
 @app.route("/login")
@@ -39,8 +61,36 @@ def login():
 def create():
     data = request.json
     db = Db()
-    error = db.insertUsers([User(data["user"], data["password"])])
+    error = db.insertUsers([User(data["user"], data["password"]), data["email"], data["phone"], data["especial"]])
     return Response(json.dumps({"exist_error": error}), mimetype="application/json")
+
+@app.route("/allParksLocation")
+def parks():
+    db = Db()
+    l_coordenadas = db.getAllParks()
+    return Response(json.dumps({"Coordenadas" : l_coordenadas}), mimetype="application/json")
+
+@app.route("/allParksInfo")
+def parksInfo():
+    db = Db()
+    parques = db.getallParks()
+    dic = {}
+    for k in set(parques.keys()):
+        p = parques[k]
+        d = {
+            "name": p.name,
+            "location": p.location,
+            "lugares_max": p.lugares_max,
+            "lugares_livres": p.lugares_livres,
+            "lugares_tipos": p.lugares_info,
+            "pricetable": p.tabela_preco,
+            "owner": p.owner
+        }
+        dic[k] = d
+    return Response(json.dumps(dic), mimetype="application/json")
+        
+
+
 
 
 

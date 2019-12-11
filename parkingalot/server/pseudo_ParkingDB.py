@@ -18,7 +18,7 @@ class Db:
             du = pickle.load(f)
             f.close()
             for u in user_list:
-                du[u.name] = u.password
+                du[u.name] = u
             f = open("Users.txt", "wb")
             pickle.dump(du, f)
             f.close()
@@ -48,12 +48,26 @@ class Db:
             f.close()
             return None
 
-    def getUserPassword(self, name):
+    def getAllParks(self):
+        f = open("Parks.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        return list(d.keys())
+
+    def getUser(self, name):
         f = open("Users.txt", "rb")
         du = pickle.load(f)
         f.close()
         if (name in set(du.keys())):
             return du[name]
+        return None
+
+    def getUserPassword(self, name):
+        f = open("Users.txt", "rb")
+        du = pickle.load(f)
+        f.close()
+        if (name in set(du.keys())):
+            return du[name].password
         return ""
         
 
@@ -62,6 +76,13 @@ class Db:
         if (name == "batatinhas" and password == "batatinhas"):
             return "T"
         return "F"
+
+    def getallParks(self):
+        f = open("Parks.txt", "rb")
+        p = pickle.load(f)
+        f.close()
+        return p
+
 
 
 class Parque:
@@ -78,9 +99,22 @@ class Parque:
 
 class User:
 
-    def __init__(self, name, password):
+    def __init__(self, name, password, email, telemovel, proprietario):
         self.name = name
         self.password = password
+        self.email = email
+        self.telemovel = telemovel
+        self.favoritos = [] #lista de coordenadas
+        self.reserva = Reserva()     #dicionario com coordendas, objeto (data, hora partida) {c : 12123, {data : aefea, hora : 123}, {data : aefea, hora : 123}}
+        self.proprietario = proprietario
 
+class Reserva:
+
+    def __init__(self, coordenadas="None", dataInicial="None" , horaInicial="None", dataFinal="None", horaFinal="None"):
+        self.coordenadas = coordenadas
+        self.dataInicial = dataInicial
+        self.horaInicial = horaInicial
+        self.dataFinal = dataFinal
+        self.horaFinal = horaFinal
 
 
