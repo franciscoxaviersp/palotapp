@@ -3,15 +3,16 @@ class User {
   String name;
   String email;
   String phone;
-  List parks;
+  List parks; // list of coordinates in string format
 
   User(this.name, this.email, this.phone, this.parks);
 }
 
 class Regular extends User {
   Reservation reservation;
+  double credit;
 
-  Regular(String name, String email, String phone, List parks, this.reservation): super(name,email,phone,parks);
+  Regular(String name, String email, String phone, List parks, this.reservation, this.credit): super(name,email,phone,parks);
 }
 
 class Proprietary extends User {

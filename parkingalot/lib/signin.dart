@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:parkingalot/homepage.dart';
+import 'package:parkingalot/profile.dart';
 import 'package:parkingalot/register.dart';
 import 'utils.dart';
 
@@ -34,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordFilter = new TextEditingController();
   String _username = "";
   String _password = "";
-  //String url = 'http://192.168.43.60:5000/';
-  String url = 'http://10.0.2.2:5000/';
+  String url = 'http://192.168.43.60:5000/';
+  //String url = 'http://10.0.2.2:5000/';
 
   _LoginPageState() {
     _usernameFilter.addListener(_usernameListen);
@@ -170,20 +171,21 @@ class _LoginPageState extends State<LoginPage> {
           response = await http.get(Uri.encodeFull(info));
           if(response.statusCode>=200 && response.statusCode<=400){
             validResponse = jsonDecode(response.body);
-            //TODO construct User (regular or Proprietary)
             User user;
-            print(validResponse);
             if (validResponse["proprietario"]=="false") {
               var r=validResponse["reserva"];
               Reservation reserv=Reservation(r["lat"],r["lon"],null,null);
-              user=Regular(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"],reserv);
+              user=Regular(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"],reserv,(validResponse["saldo"]).toDouble());
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => HomePage(user)),
               );
             } else {
-              user=Proprietary(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"]);
-              //TODO push to the profile page
+              user=Proprietary(validResponse["name"].toString(),validResponse["email"].toString(),validResponse["telemovel"].toString(),validResponse["favoritos"]);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile(user)),
+              );
             }
             return;
           }

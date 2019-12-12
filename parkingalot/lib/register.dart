@@ -36,8 +36,8 @@ class _RegisterPageState extends State<RegisterPage> {
   String _email = "";
   String _phone = "";
   bool _type = false;
-  //String url = 'http://192.168.43.60:5000/';
-  String url = 'http://10.0.2.2:5000/';
+  String url = 'http://192.168.43.60:5000/';
+  //String url = 'http://10.0.2.2:5000/';
 
   _RegisterPageState() {
     _usernameFilter.addListener(_usernameListen);
