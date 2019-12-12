@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:parking_a_lot/soon.dart';
-import 'package:parking_a_lot/reserva.dart';
+import 'package:parkingalot/soon.dart';
+import 'package:parkingalot/reserva.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ParqueHospital extends StatefulWidget{
