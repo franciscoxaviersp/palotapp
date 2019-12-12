@@ -18,7 +18,12 @@ void main() {
 
 
 
-    
+    test('ask credentials', () async {
+      await driver.tap(find.byValueKey('gotoreg'));
+
+      //expect(find.byType('RegisterPage'),findsOneWidget);
+      await driver.waitFor(find.byType('RegisterPage'));
+    });
 
   });
 }
