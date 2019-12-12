@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,9 +9,14 @@ import 'parqueUA.dart';
 import 'parqueHospital.dart';
 import 'parqueMusica.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
+
+//final String url = "http://217.129.242.51:5000/";
+final String url = "http://192.168.43.60:5000/";
 var currentLat;
 var currentLong;
+Map parks;
 class HomePage extends StatefulWidget {
   final User user;
 
@@ -33,6 +39,8 @@ class HomePageState extends State<HomePage> {
   double zoomVal=5.0;
   @override
   Widget build(BuildContext context) {
+    _getUserLocation();
+    _getParks();
     return Scaffold(
       appBar: AppBar(
         leading: new Container(),
@@ -192,8 +200,6 @@ class HomePageState extends State<HomePage> {
     return tuple;
   }
   Widget _buildGoogleMap(BuildContext context) {
-    _getUserLocation();
-    //print(location);
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -205,37 +211,50 @@ class HomePageState extends State<HomePage> {
         },
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
-        markers: {
-          hospitalMarker,uaMarker,musicaMarker
-        },
+        markers: markers(),
       ),
     );
   }
+  Set<Marker> markers(){
+
+    Set<Marker> markers= Set<Marker>();
+    int i=0;
+    parks.forEach((key,value){
+      print(key);
+      var coordinates=key.split(",");
+      Marker m = Marker(
+        markerId: MarkerId(i.toString()),
+        position: LatLng(double.parse(coordinates[0]),double.parse(coordinates[1])),
+        infoWindow: InfoWindow(title: value['name']),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueBlue,
+        ),
+      );
+      print(m);
+      markers.add(m);
+      i++;
+    });
+    return markers;
+  }
+
+}
+_getParks() {
+  String temp = url + 'allParksInfo';
+
+  Future<String> makeRequest() async {
+    var response = await http.get(Uri.encodeFull(temp));
+    var validResponse;
+    print(validResponse);
+    if (response.statusCode >= 200 && response.statusCode <= 400) {
+      parks = jsonDecode(response.body);
+      print(parks);
+    }
+    else {
+      throw new Exception("Error while fetching data");
+    }
+  }
+  makeRequest();
 }
 
-Marker hospitalMarker = Marker(
-  markerId: MarkerId('hospital'),
-  position: LatLng(40.634523,  -8.656944),
-  infoWindow: InfoWindow(title: 'Estacionamento Centro Hospitalar Baixo Vouga'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueBlue,
-  ),
-);
 
-Marker uaMarker = Marker(
-  markerId: MarkerId('ua'),
-  position: LatLng(40.630931, -8.655511),
-  infoWindow: InfoWindow(title: 'Parque UA'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueBlue,
-  ),
-);
-Marker musicaMarker = Marker(
-  markerId: MarkerId('musica'),
-  position: LatLng(40.636420, -8.654863),
-  infoWindow: InfoWindow(title: 'Parque Conservatório de Música'),
-  icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueBlue,
-  ),
-);
 
