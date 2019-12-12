@@ -105,6 +105,7 @@ class User:
         self.email = email
         self.telemovel = telemovel
         self.favoritos = [] #lista de coordenadas
+        self.saldo = 0
         self.reserva = Reserva()     #dicionario com coordendas, objeto (data, hora partida) {c : 12123, {data : aefea, hora : 123}, {data : aefea, hora : 123}}
         self.proprietario = proprietario
 

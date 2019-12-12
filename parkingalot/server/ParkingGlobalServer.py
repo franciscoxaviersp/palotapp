@@ -29,14 +29,16 @@ def userInfo():
     db = Db()
     name = request.args.get("name", None)
     u = db.getUser(name)
-    print(u.reserva)
+    coords=u.reserva.coordenadas.split() if u.reserva.coordenadas!="None" else ["0","0"]
     dic = {
         "name": u.name,
         "password": u.password,
         "email": u.email,
         "telemovel": u.telemovel,
         "favoritos": u.favoritos,
-        "reserva": {"coordenadas" : u.reserva.coordenadas,
+        "saldo": u.saldo,
+        "reserva": {"lat" : float(coords[0]),
+                    "lon" : float(coords[1]),
                     "inicio" : {"data" : u.reserva.dataInicial, "hora" : u.reserva.horaInicial},
                     "fim" : {"data": u.reserva.dataFinal, "hora": u.reserva.horaFinal}
                     },
@@ -61,7 +63,7 @@ def login():
 def create():
     data = request.json
     db = Db()
-    error = db.insertUsers([User(data["user"], data["password"]), data["email"], data["phone"], data["especial"]])
+    error = db.insertUsers([User(data["user"], data["password"], data["email"], data["phone"], data["especial"])])
     return Response(json.dumps({"exist_error": error}), mimetype="application/json")
 
 @app.route("/allParksLocation")

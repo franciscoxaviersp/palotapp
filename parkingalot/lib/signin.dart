@@ -146,6 +146,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _loginPressed () {
     String post = url+'login?user=$_username';
+    String info = url+'userInfo?name=$_username';
     print('The user wants to log in $_username and $_password');
 
     void makeRequest() async {
@@ -153,9 +154,7 @@ class _LoginPageState extends State<LoginPage> {
       var validResponse;
       if(response.statusCode>=200 && response.statusCode<=400){
         validResponse=jsonDecode(response.body);
-        print(validResponse);
         //add password encryption
-        print(validResponse['password']);
         if (validResponse['exist_error'] != "false"){
           _showDialogLoginUsername(context);
           return;
@@ -168,20 +167,29 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
           );*/
-          response = await http.get(Uri.encodeFull(post));
+          response = await http.get(Uri.encodeFull(info));
           if(response.statusCode>=200 && response.statusCode<=400){
             validResponse = jsonDecode(response.body);
             //TODO construct User (regular or Proprietary)
-            var user;
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage(user)),
-            );
+            User user;
+            print(validResponse);
+            if (validResponse["proprietario"]=="false") {
+              var r=validResponse["reserva"];
+              Reservation reserv=Reservation(r["lat"],r["lon"],null,null);
+              user=Regular(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"],reserv);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage(user)),
+              );
+            } else {
+              user=Proprietary(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"]);
+              //TODO push to the profile page
+            }
+            return;
           }
         }
 
       }
-      //throw new Exception("Error while fetching data");
       _conectionFailure(context);
     }
     makeRequest();

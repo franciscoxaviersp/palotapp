@@ -3,22 +3,20 @@ class User {
   String name;
   String email;
   String phone;
+  List parks;
 
-  User(this.name, this.email, this.phone);
+  User(this.name, this.email, this.phone, this.parks);
 }
 
 class Regular extends User {
-  List favorites;
   Reservation reservation;
 
-  Regular(String name, String email, String phone, this.favorites, this.reservation): super(name,email,phone);
+  Regular(String name, String email, String phone, List parks, this.reservation): super(name,email,phone,parks);
 }
 
 class Proprietary extends User {
-  String contact;
-  List<Park> parks;
 
-  Proprietary(String name, String email, String phone, this.contact, this.parks): super(name,email,phone);
+  Proprietary(String name, String email, String phone, List parks): super(name,email,phone,parks);
 }
 
 class Park {
