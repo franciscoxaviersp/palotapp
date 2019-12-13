@@ -208,6 +208,7 @@ class _LoginPageState extends State<LoginPage> {
             title: new Text("Wrong password!"),
             actions: <Widget>[
               new FlatButton(
+                key: Key('close'),
                 onPressed: (){
                   Navigator.of(context).pop();
                 },

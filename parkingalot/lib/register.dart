@@ -236,11 +236,12 @@ class _RegisterPageState extends State<RegisterPage> {
         context:context,
         builder: ( BuildContext context){
           return AlertDialog(
-            key: Key('userexistsAlert'),
+            key: Key('Alert'),
             title: new Text("Username invalid!"),
             content: new Text("Username already exists"),
             actions: <Widget>[
               new FlatButton(
+                key: Key('Alert'),
                 onPressed: (){
                   Navigator.of(context).pop();
                 },
@@ -257,10 +258,11 @@ class _RegisterPageState extends State<RegisterPage> {
         context:context,
         builder: ( BuildContext context){
           return AlertDialog(
-            key: Key('createdAlert'),
+            key: Key('Alert'),
             title: new Text("Account created with success!"),
             actions: <Widget>[
               new FlatButton(
+                key: Key('close'),
                 onPressed: (){
                   Navigator.of(context).pop();
                   _goToLogin();

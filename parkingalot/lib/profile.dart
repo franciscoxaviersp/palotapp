@@ -146,18 +146,11 @@ class Profile extends StatelessWidget {
               style: TextStyle(fontSize:20)
             ),
             onPressed: () {
-              if(isReg){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Favorites(user,isReg,parks)),
-                );
-              }
-              else{
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Favorites(user,isReg,parks)),
-                );
-              }
+              Navigator.push(
+                context,
+                //MaterialPageRoute(builder: (context) => Favorites(user,isReg,parks)),
+                MaterialPageRoute(builder: (context) => HomePage(user,false)),
+              );
             },
           ),
         ),

@@ -118,6 +118,7 @@ class HomePageState extends State<HomePage> {
   Widget _boxes(String _image,String coordinates,Map park){
 
     return  GestureDetector(
+      key: Key('onePark'),
       onTap: () {
         Navigator.push(
           context,
