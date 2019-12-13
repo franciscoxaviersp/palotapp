@@ -11,21 +11,24 @@ import 'package:http/http.dart' as http;
 final String url = "http://192.168.43.60:5000/";
 
 
-class ParqueHospital extends StatefulWidget{
+class Parque extends StatefulWidget{
   Map park;
-  ParqueHospital(this.park):super();
+  User user;
+  Parque(this.park,this.user):super();
   @override
-  ParqueHospitalState createState() => ParqueHospitalState(park);
+  ParqueState createState() => ParqueState(park,user);
 }
 
-class ParqueHospitalState extends State<ParqueHospital> {
+class ParqueState extends State<Parque> {
   Map park;
-  ParqueHospitalState(this.park):super();
+  User user;
+  bool isPressed;
+  ParqueState(this.park,this.user):super();
   initState(){
     super.initState();
+    isPressed = (user.parks.contains(park["coords"]));
   }
-  bool isPressed = false;
-  _pressed() {
+  void _pressed() {
     var newVal = true;
     if (isPressed) {
       newVal = false;
@@ -34,13 +37,25 @@ class ParqueHospitalState extends State<ParqueHospital> {
       newVal = true;
     }
 
-    setState((){
+    setState(() {
       isPressed = newVal;
     });
+
+    updateFav();
   }
+
+  void updateFav() async {
+    var response;
+    if (isPressed)
+      response = await http.get(Uri.encodeFull(
+          url + 'addFavorite?park=${park["coords"]}&name=${user.name}'));
+    else
+      response = await http.get(Uri.encodeFull(
+          url + 'removeFavorite?park=${park["coords"]}&name=${user.name}'));
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(park);
     final image = Hero(
       tag: 'hero',
       child: SizedBox(
@@ -57,7 +72,7 @@ class ParqueHospitalState extends State<ParqueHospital> {
                   new Text('\n ${park['location']}')
                 ],
               ),
-              ButtonTheme.bar(
+              (park["public"]=="false")?ButtonTheme.bar(
                 child: ButtonBar(
                   children: <Widget>[
                     FlatButton(
@@ -78,7 +93,7 @@ class ParqueHospitalState extends State<ParqueHospital> {
                     ),
                   ],
                 ),
-              ),
+              ):new Container(),
             ],
           ),
         ),
@@ -125,31 +140,7 @@ class ParqueHospitalState extends State<ParqueHospital> {
             new Divider(),
 
            new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
-
-            new Text('',textAlign: TextAlign.left),
-             ListTile(
-
-
-              subtitle: Text('09h00 - 17h00',textAlign: TextAlign.left),
-               trailing: Text('\n0.50€'),
-            ),
-            const ListTile(
-              subtitle: Text('17h00 - 20h00',textAlign: TextAlign.left),
-              trailing: Text('\n0.50€'),
-            ),
-            const ListTile(
-              subtitle: Text('20h00 - 09h00',textAlign: TextAlign.left),
-              trailing: Text('\nGrátis'),
-            ),
-            new Text('Fins-de-Semana',textAlign: TextAlign.left),
-            const ListTile(
-              subtitle: Text('Todo o dia',textAlign: TextAlign.left),
-              trailing: Text('\nGrátis'),
-            ),
-            //new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
-            // new Text('Seg-Sext 09:00-17:00   1€', style: TextStyle(fontSize: 20)),
-            //new Text('Seg-Sext 17:00-20:00   0.50€', style: TextStyle(fontSize: 20)),
-            //new SizedBox(height: 20.0, width: 200.0),
+            (park["public"]=="false")?_getPriceTable():new Container(padding:EdgeInsets.only(bottom:20),child:new Text("Parque Grátis",textAlign: TextAlign.left)),
             new BottomAppBar(
               child:
               ListTile(
@@ -167,6 +158,43 @@ class ParqueHospitalState extends State<ParqueHospital> {
       ),
     );
   }
+
+  Widget _getPriceTable() {
+    return new Column(
+      children: _getDays(),
+    );
+  }
+
+  List<Widget> _getDays() {
+    List<Widget> days=[];
+    var keys=park["pricetable"].keys.toList();
+    for (var i=0;i<keys.length;i++) {
+      days.add(
+        new Column(
+          children: _getTimes(keys[i],park["pricetable"][keys[i]])
+        )
+      );
+    }
+    return days;
+  }
+
+  List<Widget> _getTimes(String k, Map v) {
+    List<Widget> times=[];
+    var keys=v.keys.toList();
+    for (var i=0;i<keys.length;i++) {
+      times.add(
+        new Text(k,textAlign: TextAlign.left),
+      );
+      times.add(
+        new ListTile(
+          subtitle: Text(keys[i],textAlign: TextAlign.left),
+          trailing: Text('\n${v[keys[i]]}'),
+        ),
+      );
+    };
+    return times;
+  }
+
 }
 
 class Entry {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'utils.dart';
-import 'package:parkingalot/parqueHospital.dart';
+import 'package:parkingalot/parque.dart';
 
 
 import 'package:location/location.dart';
@@ -119,7 +119,7 @@ class HomePageState extends State<HomePage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ParqueHospital(park)),
+          MaterialPageRoute(builder: (context) => Parque(park,user)),
           );
       },
       child:Container(
