@@ -7,6 +7,19 @@ import math
 
 app = Flask(__name__)
 
+
+@app.route("/parksOf")
+def parksOf():
+    db = Db()
+    name = request.args.get("user", None)
+    u = db.getUser(name)
+    dic = {}
+    parques = db.getallParks()
+    for p in u.favoritos:
+        dic[p] = parques[p].name
+    return Response(json.dumps(dic), mimetype="application/json")
+
+
 @app.route('/parkInfo')
 def parkInfo():
     db = Db()
@@ -22,7 +35,9 @@ def parkInfo():
         "lugares_tipos":p.lugares_info,
         "pricetable":p.tabela_preco,
         "owner":p.owner,
-        "image":p.image
+        "image":p.image,
+        "public": p.public,
+        "coords": coordenadas
     }
     return Response(json.dumps(dic), mimetype="application/json")
 
@@ -91,16 +106,19 @@ def parksInfo():
                 "lugares_tipos": p.lugares_info,
                 "pricetable": p.tabela_preco,
                 "owner": p.owner,
-                "image": p.image
+                "image": p.image,
+                "public": p.public,
+                "coords": k
             }
             dic[k] = d
         return Response(json.dumps(dic), mimetype="application/json")
 
     d = db.getallParks()
-    ponto = park.split()
+    ponto = park.replace("%", " ").split()
     parques = list(d.keys())
-    parques.remove(park)
-    pontos = [pa.split() for pa in parques]
+    if park in parques:
+        parques.remove(park)
+    pontos = [pa.replace("%", " ").split() for pa in parques]
     sorted(pontos, key=lambda p : haversineDistance(ponto, p))
 
     melhores = []
@@ -112,7 +130,7 @@ def parksInfo():
     dic = {}
     for m in melhores:
         a = d[m]
-        d = {
+        d_aux = {
             "name": a.name,
             "location": a.location,
             "lugares_max": a.lugares_max,
@@ -120,9 +138,11 @@ def parksInfo():
             "lugares_tipos": a.lugares_info,
             "pricetable": a.tabela_preco,
             "owner": a.owner,
-            "image": a.image
+            "image": a.image,
+            "public":a.public,
+            "coords":m
         }
-        dic[m] = d
+        dic[m] = d_aux
     return Response(json.dumps(dic), mimetype="application/json")
 
 
@@ -171,7 +191,7 @@ def allFavorites():
     l = db.favoritesList(name)
     return Response(json.dumps({"favorites": l}), mimetype="application/json")
 
-@app.route("/addReservation")
+@app.route("/addReservation", methods=["POST"])
 def addReservation():
     data = request.json  #nome, reserva
     db = Db()
@@ -184,6 +204,22 @@ def clearReservation():
     name = request.args.get("name", None)
     db.clearReservation(name)
     return Response(json.dumps({"resposta": "ok"}), mimetype="application/json")
+
+@app.route("/addFunds")  #Por defeito vai carregar 2 euros
+def addFunds():
+    db = Db()
+    name = request.args.get("name", None)
+    db.addFunds(name, 1)
+    return Response(json.dumps({"resposta": "ok"}), mimetype="application/json")
+
+@app.route("/pay", methods=["POST"])
+def pay():
+    db = Db()
+    data = request.json
+    db.addFunds(data["nome"], -1*data["valor"])
+    return Response(json.dumps({"resposta": "ok"}), mimetype="application/json")
+
+
 
         
 
