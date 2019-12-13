@@ -20,7 +20,7 @@ class Profile extends StatelessWidget {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage(user))
+                MaterialPageRoute(builder: (context) => HomePage(user,false))
               );
             }),
         title: Text("Perfil"),

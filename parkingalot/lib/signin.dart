@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
               user=Regular(validResponse["name"],validResponse["email"],validResponse["phone"],validResponse["favoritos"],reserv,(validResponse["saldo"]).toDouble());
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage(user)),
+                MaterialPageRoute(builder: (context) => HomePage(user,false)),
               );
             } else {
               user=Proprietary(validResponse["name"].toString(),validResponse["email"].toString(),validResponse["telemovel"].toString(),validResponse["favoritos"]);

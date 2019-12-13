@@ -5,42 +5,59 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'utils.dart';
 import 'soon.dart';
-import 'parqueUA.dart';
-import 'parqueHospital.dart';
-import 'parqueMusica.dart';
+
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 
-//final String url = "http://217.129.242.51:5000/";
-final String url = "http://192.168.43.60:5000/";
+final String url = "http://217.129.242.51:5000/";
+//final String url = "http://192.168.43.60:5000/";
 var currentLat;
 var currentLong;
-Map parks;
+Map parks = null;
 class HomePage extends StatefulWidget {
   final User user;
+  bool close;
 
-  HomePage(this.user): super();
+  HomePage(this.user,this.close): super();
 
   @override
-  HomePageState createState() => HomePageState(user);
+  HomePageState createState() => HomePageState(user,close);
 }
 
 class HomePageState extends State<HomePage> {
   Completer<GoogleMapController> _controller = Completer();
-  User user;
+  final User user;
+  final bool close;
 
-  HomePageState(this.user): super();
+  HomePageState(this.user,this.close): super();
 
   @override
   void initState() {
     super.initState();
   }
   double zoomVal=5.0;
+
   @override
   Widget build(BuildContext context) {
     _getUserLocation();
-    _getParks();
+    _getParks(close);
+    //0bool _isLoading = false;
+
+    void _asyncAction() async {
+
+      await _getUserLocation();
+      await _getParks(close);
+    }
+    _asyncAction();
+    /*void _asyncAction() async {
+      setState(() => _isLoading = true);
+
+      await Future.delayed(Duration(seconds: 5));
+
+      setState(() => _isLoading = false);
+    }
+    _asyncAction();*/
     return Scaffold(
       appBar: AppBar(
         leading: new Container(),
@@ -49,9 +66,10 @@ class HomePageState extends State<HomePage> {
           IconButton(
               icon: Icon(FontAwesomeIcons.search),
               onPressed: () {
+                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Soon()),
+                  MaterialPageRoute(builder: (context) => HomePage(user,true)),
                 );
               }),
         ],
@@ -75,53 +93,32 @@ class HomePageState extends State<HomePage> {
         height: 150.0,
         child: ListView(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "assets/images/hospital.JPG",
-                  40.634523,  -8.656944,"Estacionamento Centro Hospitalar Baixo Vouga"),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                   "assets/images/ua.JPG",
-                  40.630931, -8.655511,"Parque UA"),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(
-                  "assets/images/conservatorio.JPG",
-                  40.636420, -8.654863,"Parque Conservatório de Música"),
-            ),
-          ],
+          children: containerChildren(),
         ),
       ),
     );
   }
+  List<Widget> containerChildren(){
+    List<Widget> widgets = new List<Widget>();
+    if (parks != null){
 
-  Widget _boxes(String _image, double lat,double long,String parkName) {
+      parks.forEach((key,value){
+        widgets.add(new SizedBox(width: 10.0));
+        String image= "assets/images/"+value['image'];
+        widgets.add(new Padding( padding: const EdgeInsets.all(8.0), child: _boxes(image, key,value),
+        ));
+      });
+    }
+    return widgets;
+  }
+
+  Widget _boxes(String _image,String coordinates,Map park) {
     return  GestureDetector(
       onTap: () {
-        if(parkName == "Estacionamento Centro Hospitalar Baixo Vouga") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ParqueHospital()),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(user,close)),
           );
-        } else if(parkName == "Parque UA"){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ParqueUA()),
-          );
-        } else if(parkName == "Parque Conservatório de Música"){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ParqueMusica()),
-          );
-        }
       },
       child:Container(
         child: new FittedBox(
@@ -146,7 +143,7 @@ class HomePageState extends State<HomePage> {
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(parkName),
+                      child: myDetailsContainer1(park['name']),
                     ),
                   ),
 
@@ -217,37 +214,47 @@ class HomePageState extends State<HomePage> {
   }
   Set<Marker> markers(){
 
-    Set<Marker> markers= Set<Marker>();
-    int i=0;
-    parks.forEach((key,value){
-      print(key);
-      var coordinates=key.split(",");
-      Marker m = Marker(
-        markerId: MarkerId(i.toString()),
-        position: LatLng(double.parse(coordinates[0]),double.parse(coordinates[1])),
-        infoWindow: InfoWindow(title: value['name']),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          BitmapDescriptor.hueBlue,
-        ),
-      );
-      print(m);
-      markers.add(m);
-      i++;
-    });
-    return markers;
+    if (parks != null) {
+      Set<Marker> markers = Set<Marker>();
+      int i = 0;
+      parks.forEach((key, value) {
+        var coordinates = key.split(" ");
+        Marker m = Marker(
+          markerId: MarkerId(i.toString()),
+          position: LatLng(
+              double.parse(coordinates[0]), double.parse(coordinates[1])),
+          infoWindow: InfoWindow(title: value['name']),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueBlue,
+          ),
+        );
+        markers.add(m);
+        i++;
+      });
+      return markers;
+    }
+    return null;
   }
 
 }
-_getParks() {
-  String temp = url + 'allParksInfo';
+_getParks(bool close) {
+
+  String temp;
+  if (close!=null) {
+    if(!close){
+      temp = url + 'allParksInfo';
+    }else {
+      temp = url + 'allParksInfo?park=$currentLat%$currentLong';
+    }
+  }else{
+    temp = url + 'allParksInfo';
+  }
 
   Future<String> makeRequest() async {
+    print(close);
     var response = await http.get(Uri.encodeFull(temp));
-    var validResponse;
-    print(validResponse);
     if (response.statusCode >= 200 && response.statusCode <= 400) {
       parks = jsonDecode(response.body);
-      print(parks);
     }
     else {
       throw new Exception("Error while fetching data");
