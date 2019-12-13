@@ -58,6 +58,8 @@ void main() {
     });
 
     test('find parks', () async {
+      await driver.waitFor(find.byValueKey('search'));
+      await driver.tap(find.byValueKey('search'));
       await driver.waitFor(find.byValueKey('onePark'));
       await driver.tap(find.byValueKey('onePark'));
 

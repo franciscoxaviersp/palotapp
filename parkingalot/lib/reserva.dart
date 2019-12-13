@@ -21,31 +21,7 @@ class ReservaState extends State<Reserva> {
 
   @override
   Widget build(BuildContext context) {
-    void _showDialog() {
-      // flutter defined function
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            // return object of type Dialog
-            return AlertDialog(
-              title: new Text("Reserva efetuada!"),
-              content: new Text("Encontra-se em tempo de reserva!\n\nSerá descontado um valor a cada hora!"),
-              actions: <Widget>[
-                // usually buttons at the bottom of the dialog
-                new FlatButton(
-                  child: new Text("Continuar"),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => new infoReserva())
-                    );
-                  },
-                ),
-              ],
-            );
-          }
-      );
-    }
+    var format = new DateFormat('HH:mm:ss dd-MM-yyy');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -79,7 +55,7 @@ class ReservaState extends State<Reserva> {
               new SizedBox(height: 60.0, width: 200.0),
               new Text('A sua reserva terá inicio a partir de: ', style: TextStyle(fontSize: 20), textAlign: TextAlign.center),
               SizedBox(height: 10),
-              Text(' ${DateTime.now().toString()}'),
+              Text(' ${format.format(DateTime.now())}',textAlign: TextAlign.center,style: TextStyle(fontSize: 15)),
 
 
 
@@ -136,8 +112,31 @@ class ReservaState extends State<Reserva> {
       ),
 
     );
-    DateTime getFinalData(){
-      return etime;
-    }
+
+  }
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Reserva efetuada!"),
+            content: new Text("Encontra-se em tempo de reserva!\n\nSerá descontado um valor a cada hora!"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Continuar"),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => new infoReserva())
+                  );
+                },
+              ),
+            ],
+          );
+        }
+    );
   }
 }

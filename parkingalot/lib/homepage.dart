@@ -45,7 +45,8 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
 
     //0bool _isLoading = false;
-
+    _getUserLocation();
+     _getParks(close);
     void _asyncAction() async {
 
       await _getUserLocation();
@@ -60,6 +61,7 @@ class HomePageState extends State<HomePage> {
         title: Text("ParkingALot"),
         actions: <Widget>[
           IconButton(
+              key:Key("search"),
               icon: Icon(FontAwesomeIcons.search),
               onPressed: () {
                 Navigator.push(
