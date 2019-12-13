@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'utils.dart';
 import 'package:parkingalot/parqueHospital.dart';
+import 'package:parkingalot/profile.dart';
 
 
 import 'package:location/location.dart';
@@ -51,14 +52,7 @@ class HomePageState extends State<HomePage> {
       await _getParks(close);
     }
     _asyncAction();
-    /*void _asyncAction() async {
-      setState(() => _isLoading = true);
-
-      await Future.delayed(Duration(seconds: 5));
-
-      setState(() => _isLoading = false);
-    }
-    _asyncAction();*/
+  
     return Scaffold(
       appBar: AppBar(
         leading: new Container(),
@@ -71,6 +65,14 @@ class HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HomePage(user,true)),
+                );
+              }),
+          IconButton(
+              icon: Icon(FontAwesomeIcons.userCircle, color: Colors.white),
+              onPressed: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Profile(user)),
                 );
               }),
         ],
