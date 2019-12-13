@@ -85,13 +85,15 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Container(
-        padding: EdgeInsets.all(16.0),
-        child: new Column(
-          children: <Widget>[
-            _buildTextFields(),
-            _buildButtons(),
-          ],
+      body: SingleChildScrollView(
+        child:new Container(
+          padding: EdgeInsets.all(16.0),
+          child: new Column(
+            children: <Widget>[
+              _buildTextFields(),
+              _buildButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -104,7 +106,6 @@ class _RegisterPageState extends State<RegisterPage> {
     String result4="";
 
     return new Container(
-      child: SingleChildScrollView(
         child: new Column(
           children: <Widget>[
             new Container(
@@ -177,7 +178,6 @@ class _RegisterPageState extends State<RegisterPage> {
             )
           ],
         ),
-      ),
     );
   }
 
