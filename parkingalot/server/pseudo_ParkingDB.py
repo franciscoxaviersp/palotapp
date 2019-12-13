@@ -42,7 +42,6 @@ class Db:
         try:
             p=pickle.load(f)
             f.close()
-            print(p)
             return p[coords]
         except:
             f.close()
@@ -125,12 +124,21 @@ class Db:
         pickle.dump(d, f)
         f.close()
 
+    def addFunds(self, name, value):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        d[name].saldo += value
+        f = open("Users.txt", "wb")
+        pickle.dump(d, f)
+        f.close()
+
 
 
 class Parque:
 
     #hardcode para usarmos sempre o mesmos campos
-    def __init__(self, name, location, l_max, l_l, lugares_info, tabela_preco, owner, image):
+    def __init__(self, name, location, l_max, l_l, lugares_info, tabela_preco, owner, image, public):
         self.name = name
         self.location = location
         self.lugares_max = l_max
@@ -139,6 +147,7 @@ class Parque:
         self.tabela_preco = tabela_preco
         self.owner = owner
         self.image = image
+        self.public = public
 
 class User:
 
