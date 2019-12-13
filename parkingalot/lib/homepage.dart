@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'utils.dart';
-import 'soon.dart';
+import 'package:parkingalot/parqueHospital.dart';
+
 
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 
-final String url = "http://217.129.242.51:5000/";
-//final String url = "http://192.168.43.60:5000/";
+//final String url = "http://217.129.242.51:5000/";
+final String url = "http://192.168.43.60:5000/";
 var currentLat;
 var currentLong;
 Map parks = null;
@@ -112,12 +113,13 @@ class HomePageState extends State<HomePage> {
     return widgets;
   }
 
-  Widget _boxes(String _image,String coordinates,Map park) {
+  Widget _boxes(String _image,String coordinates,Map park){
+
     return  GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(user,close)),
+          MaterialPageRoute(builder: (context) => ParqueHospital(park)),
           );
       },
       child:Container(

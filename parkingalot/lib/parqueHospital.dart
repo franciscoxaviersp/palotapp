@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'utils.dart';
+import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:parkingalot/soon.dart';
 import 'package:parkingalot/reserva.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+
+final String url = "http://192.168.43.60:5000/";
+
 
 class ParqueHospital extends StatefulWidget{
+  Map park;
+  ParqueHospital(this.park):super();
   @override
-  ParqueHospitalState createState() => ParqueHospitalState();
+  ParqueHospitalState createState() => ParqueHospitalState(park);
 }
 
 class ParqueHospitalState extends State<ParqueHospital> {
-
+  Map park;
+  ParqueHospitalState(this.park):super();
   initState(){
     super.initState();
   }
@@ -30,9 +40,7 @@ class ParqueHospitalState extends State<ParqueHospital> {
   }
   @override
   Widget build(BuildContext context) {
-  
-   
-
+    print(park);
     final image = Hero(
       tag: 'hero',
       child: SizedBox(
@@ -41,12 +49,12 @@ class ParqueHospitalState extends State<ParqueHospital> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new Image(image:AssetImage('assets/hospital.jpg')),
+              new Image(image:AssetImage('assets/images/${park['image']}')),
               //SizedBox(height: 20),
               new Row(
                 children: <Widget>[
                   new IconButton(icon: Icon(isPressed ? Icons.favorite: Icons.favorite_border), onPressed:()=> _pressed()),
-                  new Text('\nAv. Padre Fernão de Oliveira\nGlória \n3810-164 Aveiro')
+                  new Text('\n ${park['location']}')
                 ],
               ),
               ButtonTheme.bar(
@@ -54,19 +62,19 @@ class ParqueHospitalState extends State<ParqueHospital> {
                   children: <Widget>[
                     FlatButton(
                       child: const Text('Pagar'),
-                        onPressed: () {
-                          Navigator.push(
+                      onPressed: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => new Soon()));
-                        },
+                      },
                     ),
                     FlatButton(
-                        child: const Text('Reservar'),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => new Reserva()));
-                          },
+                      child: const Text('Reservar'),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => new Reserva()));
+                      },
                     ),
                   ],
                 ),
@@ -83,80 +91,86 @@ class ParqueHospitalState extends State<ParqueHospital> {
             onPressed: () {
               Navigator.pop(context);
             }),
-        title: Text("Parque Hospital"),
+        title: Text('${park['name']}'),
       ),
       body: new SingleChildScrollView(
         //padding: const EdgeInsets.symmetric(horizontal: 50.0),
-          child: new Column(
-           mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              image,
-              new Divider(),
-              const ListTile(
-                title: Text('Total Lugares: 200'),
-              ),
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            image,
+            new Divider(),
+            ListTile(
+              title: new Text('Total Lugares: ${park['lugares_max']}'),
+            ),
 
 
-              new SizedBox(
-                //margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                height: 100.0,
-                width: 500.0,
+            new SizedBox(
+              //margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              height: 100.0,
+              width: 500.0,
 
-               // decoration: BoxDecoration(
-                child:
-                 new ListView.builder(
+              // decoration: BoxDecoration(
+              child:
+              new ListView.builder(
 
-                   padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                   itemBuilder: (BuildContext context, int index) =>
-                       EntryItem(data[index]),
-                   itemCount: data.length,
-                 ),
-
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                itemBuilder: (BuildContext context, int index) =>
+                    EntryItem(data[index]),
+                itemCount: data.length,
               ),
 
-              new Divider(),
-              
-              new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
-              new Text('Segunda - Sexta',textAlign: TextAlign.left),
-              const ListTile(
-                subtitle: Text('09h00 - 17h00',textAlign: TextAlign.left),
-                trailing: Text('\n1.00€'),
-              ),
-              const ListTile(
-                subtitle: Text('17h00 - 20h00',textAlign: TextAlign.left),
-                trailing: Text('\n0.50€'),
-              ),
-              const ListTile(
-                subtitle: Text('20h00 - 09h00',textAlign: TextAlign.left),
-                trailing: Text('\nGrátis'),
-              ),
-              new Text('Fins-de-Semana',textAlign: TextAlign.left),
-              const ListTile(
-                subtitle: Text('Todo o dia',textAlign: TextAlign.left),
-                trailing: Text('\nGrátis'),
-              ),
-              //new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
-             // new Text('Seg-Sext 09:00-17:00   1€', style: TextStyle(fontSize: 20)),
-              //new Text('Seg-Sext 17:00-20:00   0.50€', style: TextStyle(fontSize: 20)),
-              //new SizedBox(height: 20.0, width: 200.0),
-              new BottomAppBar(
-                child:
-                ListTile(
-                  title: Text('Proprietário',textAlign: TextAlign.center),
-                  subtitle: FlatButton.icon(
-                      label: Text('MoveAveiro\n23440638',style: TextStyle(color: Colors.grey)),
-                      icon: Icon(Icons.call,size:20),
-                      onPressed: () => launch("tel://234406387"),
-                  ),
+            ),
+
+            new Divider(),
+
+           new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
+             getHorarios(park),
+            new Text('',textAlign: TextAlign.left),
+             ListTile(
+
+
+              subtitle: Text('09h00 - 17h00',textAlign: TextAlign.left),
+              trailing:  park.forEach((key,value){
+
+              }),
+            ),
+            const ListTile(
+              subtitle: Text('17h00 - 20h00',textAlign: TextAlign.left),
+              trailing: Text('\n0.50€'),
+            ),
+            const ListTile(
+              subtitle: Text('20h00 - 09h00',textAlign: TextAlign.left),
+              trailing: Text('\nGrátis'),
+            ),
+            new Text('Fins-de-Semana',textAlign: TextAlign.left),
+            const ListTile(
+              subtitle: Text('Todo o dia',textAlign: TextAlign.left),
+              trailing: Text('\nGrátis'),
+            ),
+            //new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
+            // new Text('Seg-Sext 09:00-17:00   1€', style: TextStyle(fontSize: 20)),
+            //new Text('Seg-Sext 17:00-20:00   0.50€', style: TextStyle(fontSize: 20)),
+            //new SizedBox(height: 20.0, width: 200.0),
+            new BottomAppBar(
+              child:
+              ListTile(
+                title: Text('Proprietário',textAlign: TextAlign.center),
+                subtitle: FlatButton.icon(
+                  label: Text('MoveAveiro\n23440638',style: TextStyle(color: Colors.grey)),
+                  icon: Icon(Icons.call,size:20),
+                  onPressed: () => launch("tel://234406387"),
                 ),
-
               ),
-            ],
-          ),
+
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
 class Entry {
   Entry(this.title,this.icon, [this.children = const <Entry>[]]);
   final IconData icon;
