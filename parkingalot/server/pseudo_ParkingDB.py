@@ -83,12 +83,54 @@ class Db:
         f.close()
         return p
 
+    def addFavorite(self, name, coordenadas):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        d[name].favoritos.append(coordenadas)
+        f = open("Users.txt", "wb")
+        pickle.dump(d, f)
+        f.close()
+
+    def removeFavorite(self, name, coordenadas):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        d[name].favoritos.remove(coordenadas)
+        f = open("Users.txt", "wb")
+        pickle.dump(d, f)
+        f.close()
+
+    def favoritesList(self, name):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        return d[name].favoritos
+
+    def addReservation(self, name, coordenadas, dataInicial , horaInicial, dataFinal, horaFinal):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        d[name].reserva = Reserva(coordenadas, dataInicial , horaInicial, dataFinal, horaFinal)
+        f = open("Users.txt", "wb")
+        pickle.dump(d, f)
+        f.close()
+
+    def clearReservation(self, name):
+        f = open("Users.txt", "rb")
+        d = pickle.load(f)
+        f.close()
+        d[name].reserva = Reserva()
+        f = open("Users.txt", "wb")
+        pickle.dump(d, f)
+        f.close()
+
 
 
 class Parque:
 
     #hardcode para usarmos sempre o mesmos campos
-    def __init__(self, name, location, l_max, l_l, lugares_info, tabela_preco, owner):
+    def __init__(self, name, location, l_max, l_l, lugares_info, tabela_preco, owner, image):
         self.name = name
         self.location = location
         self.lugares_max = l_max
@@ -96,6 +138,7 @@ class Parque:
         self.lugares_info = lugares_info
         self.tabela_preco = tabela_preco
         self.owner = owner
+        self.image = image
 
 class User:
 

@@ -15,9 +15,25 @@ h = Parque("Estacionamento Centro Hospitalar Baixo Vouga", "Av. Padre Fernão de
     },
     {
         "name":"MoveAveiro", "contact":"+351-234-406-387"
-    })
+    }, "hospital.JPG")
+
+p = Parque("Estacionamento da UA", "Av. Santo Francisco, 38040-164 Aveiro", 140, 140, {
+        "deficientes": 100, "electricos": 0, "geral": 0
+    }, {
+        "Seg-Sex": {
+            "09:00-17:00":1.00,
+            "17:00-20:00":0.50
+        },
+        "Fim-de-semana": {
+            "(todas as horas)":0.00
+        }
+    },
+    {
+        "name":"MoveAveiro", "contact":"+351-234-406-387"
+    }, "ua.JPG")
+
 d = Db()
-d.insertParkInfo({"40.634523 -8.656944":h})
+d.insertParkInfo({"40.634523 -8.656944":h, "41.634523 -8.856944" : p})
 
 f = open("Users.txt", "wb")
 pickle.dump({}, f)
