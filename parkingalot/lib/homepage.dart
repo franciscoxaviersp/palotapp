@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'utils.dart';
 import 'package:parkingalot/profile.dart';
 import 'package:parkingalot/parque.dart';
+import 'dart:io';
 
 
 import 'package:location/location.dart';
@@ -42,14 +43,14 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _getUserLocation();
-    _getParks(close);
+
     //0bool _isLoading = false;
 
     void _asyncAction() async {
 
       await _getUserLocation();
       await _getParks(close);
+
     }
     _asyncAction();
 
@@ -61,7 +62,6 @@ class HomePageState extends State<HomePage> {
           IconButton(
               icon: Icon(FontAwesomeIcons.search),
               onPressed: () {
-                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HomePage(user,true)),
