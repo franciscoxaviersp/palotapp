@@ -52,7 +52,7 @@ class HomePageState extends State<HomePage> {
       await _getParks(close);
     }
     _asyncAction();
-  
+
     return Scaffold(
       appBar: AppBar(
         leading: new Container(),

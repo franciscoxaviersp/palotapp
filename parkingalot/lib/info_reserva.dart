@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:parking_a_lot/soon.dart';
+
 import 'package:intl/intl.dart';
-import 'package:parking_a_lot/reserva.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:parking_a_lot/reserva.dart' as a;
+import 'package:parkingalot/reserva.dart';
+
+
 
 class infoReserva extends StatefulWidget{
   @override
