@@ -1,10 +1,16 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:parkingalot/signin.dart';
 import 'package:parkingalot/homepage.dart';
 import 'utils.dart';
+import 'package:http/http.dart' as http;
 
+String url = 'http://192.168.43.60:5000/';
+//String url = 'http://10.0.2.2:5000/';
+Map parks;
 class Profile extends StatelessWidget {
   final User user;
   final bool isReg;
@@ -13,6 +19,12 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    void _asyncAction() async {
+
+      parks = await _getParks(user);
+    }
+    _asyncAction();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -103,7 +115,7 @@ class Profile extends StatelessWidget {
                   ],
                 )
               ),
-              _getButtons(),
+              _getButtons(context),
               new Container(
                 padding: EdgeInsets.only(top:20),
                 child: new RaisedButton(
@@ -120,10 +132,12 @@ class Profile extends StatelessWidget {
     );
   }
 
-  Widget _getButtons() {
+  Widget _getButtons(context) {
     return new Row(
+
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+
         new Expanded(
           child: new RaisedButton(
             child: new Text(
@@ -131,10 +145,22 @@ class Profile extends StatelessWidget {
               style: TextStyle(fontSize:20)
             ),
             onPressed: () {
-              //TODO got to park list
+              if(isReg){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => favorites(user,isReg,parks)),
+                );
+              }
+              else{
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => favorites(user,isReg,parks)),
+                );
+              }
             },
           ),
         ),
+
         isReg?new Expanded(child: _getReservationButton()):new Container()
       ],
     );
@@ -156,4 +182,17 @@ class Profile extends StatelessWidget {
     );
   }
 
+}
+Map _getParks(User user){
+  String post = url+'parksOf?user=${user.name}';
+
+  void makeRequest() async {
+    var response = await http.get(Uri.encodeFull(post));
+    var validResponse;
+    if (response.statusCode >= 200 && response.statusCode <= 400) {
+      parks = jsonDecode(response.body);
+      print(validResponse);
+    }
+  }
+  makeRequest();
 }
