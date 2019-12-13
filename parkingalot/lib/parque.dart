@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:parkingalot/soon.dart';
 import 'package:parkingalot/reserva.dart';
+import 'package:parkingalot/profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -104,7 +105,10 @@ class ParqueState extends State<Parque> {
         leading: IconButton(
             icon: Icon(FontAwesomeIcons.arrowLeft),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Profile(user))
+              );
             }),
         title: Text('${park['name']}'),
       ),

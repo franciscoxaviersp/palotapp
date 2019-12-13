@@ -148,13 +148,13 @@ class Profile extends StatelessWidget {
               if(isReg){
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => favorites(user,isReg,parks)),
+                  MaterialPageRoute(builder: (context) => Favorites(user,isReg,parks)),
                 );
               }
               else{
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => favorites(user,isReg,parks)),
+                  MaterialPageRoute(builder: (context) => Favorites(user,isReg,parks)),
                 );
               }
             },
