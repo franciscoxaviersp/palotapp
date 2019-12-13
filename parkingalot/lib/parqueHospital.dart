@@ -125,15 +125,13 @@ class ParqueHospitalState extends State<ParqueHospital> {
             new Divider(),
 
            new Text('Horários e Preços', style: TextStyle(fontSize: 20)),
-             getHorarios(park),
+
             new Text('',textAlign: TextAlign.left),
              ListTile(
 
 
               subtitle: Text('09h00 - 17h00',textAlign: TextAlign.left),
-              trailing:  park.forEach((key,value){
-
-              }),
+               trailing: Text('\n0.50€'),
             ),
             const ListTile(
               subtitle: Text('17h00 - 20h00',textAlign: TextAlign.left),
